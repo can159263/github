@@ -16,6 +16,11 @@ import org.apache.http.impl.client.HttpClients;
 
 public class SSLUtils {
 
+	/**
+	 * 创建信任所有证书的HttpClient
+	 * 
+	 * @return
+	 */
 	public static CloseableHttpClient createSSLInsecureClient() {
 
 		try {
