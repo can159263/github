@@ -26,8 +26,11 @@
  */
 package com.szboc.platform.https.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -50,9 +53,9 @@ public class ClientCustomSSL {
 
     public final static void main(String[] args) throws Exception {
         KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
-        FileInputStream instream = new FileInputStream(new File("my.keystore"));
+        FileInputStream instream = new FileInputStream(new File("D:/keystore1.keystore"));
         try {
-            trustStore.load(instream, "nopassword".toCharArray());
+            trustStore.load(instream, "op159263".toCharArray());
         } finally {
             instream.close();
         }
@@ -72,7 +75,7 @@ public class ClientCustomSSL {
                 .build();
         try {
 
-            HttpGet httpget = new HttpGet("https://localhost/");
+            HttpGet httpget = new HttpGet("https://localhost:8443/HTTPS_SERVER");
 
             System.out.println("executing request" + httpget.getRequestLine());
 
@@ -84,7 +87,15 @@ public class ClientCustomSSL {
                 System.out.println(response.getStatusLine());
                 if (entity != null) {
                     System.out.println("Response content length: " + entity.getContentLength());
-                    System.out.println(entity.getContent());
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    byte[] b = new byte[(int) entity.getContentLength()];
+                    InputStream is = entity.getContent();
+                    is.read(b);
+                    bos.write(b);
+                    bos.flush();
+                    bos.close();
+                    System.out.println(new String(bos.toByteArray(), "UTF-8"));
+                    is.close();
                 }
                 EntityUtils.consume(entity);
             } finally {

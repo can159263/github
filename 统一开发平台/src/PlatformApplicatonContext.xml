@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 系统平台内部Spring Bean配置文件 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 
+		扩展平台需要配置两个bean
+			1, platformDataSource			系统主数据源
+			2, platformDatabaseObjects		系统数据库名称集合
+		否则Spring容器无法正常初始化
+	 -->
+
+	<!-- 注入平台模版,注意底层使用NameParameterJdbcTemplate进行二次代理 -->
+	<bean id="platformJdbcTemplate"
+		class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="platformDataSource" />
+	</bean>
+	
+	<!-- 使用系统平台数据源进行事务操作 -->
+	<bean id="platformTxManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="platformDataSource" />
+	</bean>
+
+	<!-- 自动扫描参数Dao层 -->
+	<context:component-scan base-package="cn.szboc.platform.modules.parameter.dao" />
+	<!-- 自动扫描参数Service层 -->
+	<context:component-scan base-package="cn.szboc.platform.modules.parameter.service"/>
+
+	<!-- 注解驱动事务管理器 -->
+	<tx:annotation-driven transaction-manager="platformTxManager" />
+
+	<!-- 参数辅助类 -->
+	<bean id="systemParameterHelper" class="cn.szboc.platform.modules.parameter.SystemParameterHelper" factory-method="getInstance">
+		<property name="paramService" ref="systemParameterService" />
+	</bean>
+
+	<!-- 注册表 -->
+	<bean id="platformRegister" class="cn.szboc.platform.core.PlatformRegister" factory-method="getInstance" />
+
+</beans>
