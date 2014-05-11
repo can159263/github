@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 
+		此配置文件主要对报文前置接收系统连接的各种资源进行配置 
+		即会随着开发环境,测试环境,生产环境的变更导致的易变配置
+		涉及到数据库,网络通信等环境
+	-->
+
+	<!-- 向系统Spring容器注册平台数据源 -->
+	<bean id="platformDataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="oracle.jdbc.OracleDriver" />
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@22.145.28.75:1521:query10g" />
+		<property name="user" value="kftadm" />
+		<property name="password" value="kftadm" />
+		<property name="checkoutTimeout" value="180000" />
+		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="5" />
+	</bean>
+
+	<!-- 向系统平台设置系统表,名字必须是这个 -->
+	<bean id="platformDatabaseObjects" class="cn.szboc.uniformproxy.frontend.system.FrontendDatabaseObjects">
+		<constructor-arg value="kftadm" />
+	</bean>
+
+
+</beans>

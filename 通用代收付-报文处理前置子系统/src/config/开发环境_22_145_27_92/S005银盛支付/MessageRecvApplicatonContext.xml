@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 导入统一平台Spring基础组件 -->
+	<import resource="classpath*:PlatformApplicatonContext.xml" />
+	<!-- 导入资源配置文件 -->
+	<import resource="classpath*:MessageRecvApplicatonContext-rs.xml" />
+	<!-- 导入系统配置文件 -->
+	<import resource="classpath*:MessageRecvApplicatonContext-cfg.xml" />
+	<!-- 报文处理组件 -->
+	<import resource="classpath*:MessageRecvApplicatonContext-msg.xml" />
+
+	<!-- 启动器 -->
+	<bean id="bootStrap" class="cn.szboc.uniformproxy.bootstrap.Bootstrap"
+		factory-method="getInstance">
+		<property name="systemCodeChecker" ref="systemCodeChecker" />
+		<property name="netAddressChecker" ref="netAddressChecker" />
+		<property name="batchServer" ref="batchDeductResponseServer" />
+	</bean>
+
+	<!-- 系统启动校验模块 -->
+	<context:component-scan
+		base-package="cn.szboc.uniformproxy.bootstrap.check.syscodecheck" />
+	<context:component-scan
+		base-package="cn.szboc.uniformproxy.bootstrap.check.netaddresscheck" />
+
+	<bean id="remoteInvokeService"
+		class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceUrl"
+			value="http://22.145.27.92:8080/ups/remoting/remoteInvokeService" />
+		<property name="serviceInterface"
+			value="cn.szboc.uniformproxy.remoteinvoke.RemoteInvokeService" />
+	</bean>
+
+</beans>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 系统配置 -->
+
+	<bean id="KEY_SYSTEM_CONFIG_BEAN" class="cn.szboc.uniformproxy.frontend.system.SystemConfigBean">
+		<!-- 快付通系统别 -->
+		<property name="systemCode" value="S008" />
+		<!-- 要监听的本机IP地址 -->
+		<property name="lstnIp" value="22.145.28.48" />
+		<!-- 要监听的本机端口地址 -->
+		<property name="lstnPort" value="10008" />
+		<!-- 最大报文长度 -->
+		<property name="maxSizeInM" value="5" />
+		<!-- 数据库表前缀名 -->
+		<property name="prefixOfTable" value="FUYOU" />
+		<!-- 报文接收目录 -->
+		<property name="msgRecvPath" value="/opt/messages/S008/recv" />
+		<!-- 报文发送目录 -->
+		<property name="msgSendPath" value="/opt/messages/S008/send" />
+		<!-- 是否保留原始二进制数据 -->
+		<property name="saveRawData" value="false" />
+		<!-- DES密钥 -->
+		<property name="desKey">
+			<array>
+				<value>-104</value>
+				<value>-104</value>
+				<value>112</value>
+				<value>-116</value>
+				<value>115</value>
+				<value>56</value>
+				<value>-5</value>
+				<value>-32</value>
+			</array>
+		</property>
+	</bean>
+
+	<!-- 批量报文异步回盘结果处理服务器 -->
+	<bean id="batchDeductResponseServer" class="cn.szboc.uniformproxy.batchtrade.transaction.BatchDeductResponseServer">
+		<property name="lstnPort" value="20008" />
+		<property name="recvMapping" ref="ECES_RESPONSE_RECV_XML_MAPPING" />
+		<property name="sendMapping" ref="ECES_RESPONSE_SEND_XML_MAPPING" />
+		<property name="remoteInvokeService" ref="remoteInvokeService" />
+	</bean>
+
+</beans>

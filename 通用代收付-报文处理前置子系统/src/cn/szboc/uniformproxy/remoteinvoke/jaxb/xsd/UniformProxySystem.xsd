@@ -1,0 +1,1910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+	targetNamespace="http://www.szboc.cn/projects/open/2012/UniformProxySystem"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.szboc.cn/projects/open/2012/UniformProxySystem"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+	<xs:annotation>
+		<xs:documentation> 本文档定义了中国银行深圳市分行统一代收付系统的请求/响应报文通用头部的格式 </xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:documentation> 报文交易码如下: </xs:documentation>
+		<xs:documentation> A001: 通信链路探测交易 </xs:documentation>
+		<xs:documentation> A002: 代收付公司信息注册交易 </xs:documentation>
+		<xs:documentation> B001: 单笔实时代收交易 </xs:documentation>
+		<xs:documentation> B002: 单笔实时代付交易 </xs:documentation>
+		<xs:documentation> B003: 单笔实时冲正交易 </xs:documentation>
+		<xs:documentation> B004: 批量代收交易 </xs:documentation>
+		<xs:documentation> B005: 批量代付交易 </xs:documentation>
+		<xs:documentation> B101: (+)单笔实时代收交易,增加中间代收付公司信息 </xs:documentation>
+		<xs:documentation> B102: (+)单笔实时代付交易,增加中间代收付公司信息 </xs:documentation>
+		<xs:documentation> B104: (+)批量代收交易,增加中间代收付公司信息 </xs:documentation>
+		<xs:documentation> B105: (+)批量代付交易,增加中间代收付公司信息 </xs:documentation>
+		<xs:documentation> C001: 账户验证交易 </xs:documentation>
+		<xs:documentation> C002: 单笔账务结果查询交易 </xs:documentation>
+		<xs:documentation> C003: 批量账务结果查询交易 </xs:documentation>
+		<xs:documentation> C004: 对账查询交易 </xs:documentation>
+		<xs:documentation> C102: (+)单笔账务结果查询交易,增加原交易扣款返回码和冲正返回码 </xs:documentation>
+		<xs:documentation> C103: (+)批量账务结果查询交易,增加原交易扣款返回码和冲正返回码  </xs:documentation>
+		<xs:documentation> C104: (+)对账查询交易,增加原交易扣款返回码和冲正返回码  </xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:documentation> JAXB xs:dateTime与java.util.Date的映射 </xs:documentation>
+		<xs:appinfo>
+			<jaxb:globalBindings>
+				<jaxb:javaType name="java.util.Date" xmlType="xs:date"
+					parseMethod="cn.szboc.platform.component.xmlbean.adaptor.DateAdapter.parseDate"
+					printMethod="cn.szboc.platform.component.xmlbean.adaptor.DateAdapter.printDate"/>
+				<jaxb:javaType name="java.util.Date" xmlType="xs:time"
+					parseMethod="cn.szboc.platform.component.xmlbean.adaptor.TimeAdapter.parseTime"
+					printMethod="cn.szboc.platform.component.xmlbean.adaptor.TimeAdapter.printTime"/>
+				<jaxb:javaType name="java.util.Date" xmlType="xs:dateTime"
+					parseMethod="cn.szboc.platform.component.xmlbean.adaptor.DateTimeAdapter.parseDateTime"
+					printMethod="cn.szboc.platform.component.xmlbean.adaptor.DateTimeAdapter.printDateTime"
+				/>
+			</jaxb:globalBindings>
+		</xs:appinfo>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:documentation>通用类型定义</xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:documentation> 类型: 系统别(该系统别由中国银行深圳市分行分别指派4位独立的标识符给各接入商户) </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_SYS_CODE">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[A-Z0-9]{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 类型:批量交易包号 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_PACK_NO">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[-A-Za-z0-9]{20}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 类型:交易流水号 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_TRANS_NO">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[-A-Za-z0-9]{20}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 类型: 账号 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_ACCOUNT_NO">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{1,22}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 类型: 户名 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_ACCOUNT_NAME">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 类型: 证件类型 </xs:documentation>
+		<xs:documentation> P**为个人类型证件 </xs:documentation>
+		<xs:documentation> C**为企业类型证件 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_ID_TYPE">
+		<xs:restriction base="xs:string">
+			<!-- 居民身份证 -->
+			<xs:enumeration value="P01"/>
+			<!-- 临时身份证 -->
+			<xs:enumeration value="P02"/>
+			<!-- 护照 -->
+			<xs:enumeration value="P03"/>
+			<!-- 户口簿 -->
+			<xs:enumeration value="P04"/>
+			<!-- 军人身份证 -->
+			<xs:enumeration value="P05"/>
+			<!-- 武装警察身份证 -->
+			<xs:enumeration value="P06"/>
+			<!-- 港澳台居民往来内地通行证 -->
+			<xs:enumeration value="P07"/>
+			<!-- 外交人员身份证 -->
+			<xs:enumeration value="P08"/>
+			<!-- 外国人居留许可证 -->
+			<xs:enumeration value="P09"/>
+			<!-- 边民出入境通行证 -->
+			<xs:enumeration value="P10"/>
+			<!-- 其它个人证件 -->
+			<xs:enumeration value="P11"/>
+			<!-- 香港居民来往内地通行证 -->
+			<xs:enumeration value="P47"/>
+			<!-- 澳门居民来往内地通行证 -->
+			<xs:enumeration value="P48"/>
+			<!-- 台湾居民往来大陆通行证 -->
+			<xs:enumeration value="P49"/>
+			<!-- 企业法人营业执照 -->
+			<xs:enumeration value="C21"/>
+			<!-- 企业营业执照 -->
+			<xs:enumeration value="C22"/>
+			<!-- 政府人事部门或编制委员会的批文 -->
+			<xs:enumeration value="C23"/>
+			<!-- 事业单位法人登记证书 -->
+			<xs:enumeration value="C24"/>
+			<!-- 财政部门同意其开户的证明 -->
+			<xs:enumeration value="C25"/>
+			<!-- 社会团体登记证书 -->
+			<xs:enumeration value="C26"/>
+			<!-- 上级主管部门批文或证明 -->
+			<xs:enumeration value="C27"/>
+			<!-- 工会法人资格证书 -->
+			<xs:enumeration value="C28"/>
+			<!-- 民办非企业登记证书 -->
+			<xs:enumeration value="C29"/>
+			<!-- 驻华机构登记证 -->
+			<xs:enumeration value="C30"/>
+			<!-- 个体工商户营业执照 -->
+			<xs:enumeration value="C31"/>
+			<!-- 企业名称预先核准通知书 -->
+			<xs:enumeration value="C32"/>
+			<!-- 组织机构代码证 -->
+			<xs:enumeration value="C33"/>
+			<!-- 国税登记证 -->
+			<xs:enumeration value="C34"/>
+			<!-- 地税登记证 -->
+			<xs:enumeration value="C35"/>
+			<!-- 批准证书 -->
+			<xs:enumeration value="C36"/>
+			<!-- 进出口业务资格证书 -->
+			<xs:enumeration value="C37"/>
+			<!-- 外贸易经营者备案登记表 -->
+			<xs:enumeration value="C38"/>
+			<!-- 金融许可证 -->
+			<xs:enumeration value="C39"/>
+			<!-- 外汇业务核准件 -->
+			<xs:enumeration value="C40"/>
+			<!-- 外汇登记证 -->
+			<xs:enumeration value="C41"/>
+			<!-- 开户许可证 -->
+			<xs:enumeration value="C42"/>
+			<!-- 办学许可证 -->
+			<xs:enumeration value="C43"/>
+			<!-- 其他企业证件 -->
+			<xs:enumeration value="C44"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation>证件号码</xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_ID_NO">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 客户与商户签订的协议号码 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_AGREEMENT_NO">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 款项用途 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_USE_ITEM">
+		<xs:restriction base="xs:string">
+			<!-- 票据传递费 -->
+			<xs:enumeration value='845' />
+			<!-- 人行180 -->
+			<xs:enumeration value='180' />
+			<!-- 保安 -->
+			<xs:enumeration value='184' />
+			<!-- 社会保险费 -->
+			<xs:enumeration value='187' />
+			<!-- 报考 -->
+			<xs:enumeration value='189' />
+			<!-- 有线电视台台费 -->
+			<xs:enumeration value='191' />
+			<!-- 传输 -->
+			<xs:enumeration value='194' />
+			<!-- 分行总务处扣房款 -->
+			<xs:enumeration value='198' />
+			<!-- 工商 -->
+			<xs:enumeration value='199' />
+			<!-- 网银代发 -->
+			<xs:enumeration value='211' />
+			<!-- 网银报销 -->
+			<xs:enumeration value='213' />
+			<!-- 报销 -->
+			<xs:enumeration value='222' />
+			<!-- 退排水费 -->
+			<xs:enumeration value='246' />
+			<!-- 港建 -->
+			<xs:enumeration value='247' />
+			<!-- 长途电话费退款 -->
+			<xs:enumeration value='260' />
+			<!-- 移动电子商务费 -->
+			<xs:enumeration value='261' />
+			<!-- 网关业务费 -->
+			<xs:enumeration value='268' />
+			<!-- 赔付 -->
+			<xs:enumeration value='270' />
+			<!-- 土地 -->
+			<xs:enumeration value='272' />
+			<!-- 电梯 -->
+			<xs:enumeration value='284' />
+			<!-- 学杂费 -->
+			<xs:enumeration value='289' />
+			<!-- 商检 -->
+			<xs:enumeration value='299' />
+			<!-- 饮水 -->
+			<xs:enumeration value='346' />
+			<!-- 退移动保证金 -->
+			<xs:enumeration value='360' />
+			<!-- ATM退款 -->
+			<xs:enumeration value='365' />
+			<!-- 广告 -->
+			<xs:enumeration value='368' />
+			<!-- 保教 -->
+			<xs:enumeration value='389' />
+			<!-- 排污 -->
+			<xs:enumeration value='399' />
+			<!-- 年金 -->
+			<xs:enumeration value='438' />
+			<!-- 电费 -->
+			<xs:enumeration value='441' />
+			<!-- 家用电费 -->
+			<xs:enumeration value='442' />
+			<!-- 生产用电费 -->
+			<xs:enumeration value='443' />
+			<!-- V账户 -->
+			<xs:enumeration value='444' />
+			<!-- 退垃圾处理费 -->
+			<xs:enumeration value='446' />
+			<!-- 煤气费 -->
+			<xs:enumeration value='450' />
+			<!-- 管道煤气费 -->
+			<xs:enumeration value='451' />
+			<!-- 燃气费 -->
+			<xs:enumeration value='452' />
+			<!-- 数据通信费退款 -->
+			<xs:enumeration value='460' />
+			<!-- 水费 -->
+			<xs:enumeration value='461' />
+			<!-- 排水费 -->
+			<xs:enumeration value='462' />
+			<!-- 直饮水费 -->
+			<xs:enumeration value='463' />
+			<!-- 垃圾处理费 -->
+			<xs:enumeration value='464' />
+			<!-- 环卫费 -->
+			<xs:enumeration value='465' />
+			<!-- 暖气费 -->
+			<xs:enumeration value='466' />
+			<!-- 冷气费 -->
+			<xs:enumeration value='467' />
+			<!-- 公路规费 -->
+			<xs:enumeration value='471' />
+			<!-- 港口建设费 -->
+			<xs:enumeration value='472' />
+			<!-- 高速公路费 -->
+			<xs:enumeration value='473' />
+			<!-- 物业专项维修费 -->
+			<xs:enumeration value='481' />
+			<!-- 押运 -->
+			<xs:enumeration value='484' />
+			<!-- 记账 -->
+			<xs:enumeration value='489' />
+			<!-- 财政 -->
+			<xs:enumeration value='499' />
+			<!-- 线路 -->
+			<xs:enumeration value='560' />
+			<!-- 票递 -->
+			<xs:enumeration value='584' />
+			<!-- 托底安置补贴 -->
+			<xs:enumeration value='587' />
+			<!-- 劳务 -->
+			<xs:enumeration value='599' />
+			<!-- 电话费 -->
+			<xs:enumeration value='600' />
+			<!-- 市内电话费 -->
+			<xs:enumeration value='601' />
+			<!-- 市话费 -->
+			<xs:enumeration value='602' />
+			<!-- 移动电话费 -->
+			<xs:enumeration value='603' />
+			<!-- 数通 -->
+			<xs:enumeration value='604' />
+			<!-- 线路 -->
+			<xs:enumeration value='605' />
+			<!-- 代维费 -->
+			<xs:enumeration value='606' />
+			<!-- 网络使用费 -->
+			<xs:enumeration value='607' />
+			<!-- 信息服务费 -->
+			<xs:enumeration value='608' />
+			<!-- 通讯费 -->
+			<xs:enumeration value='609' />
+			<!-- 电信费 -->
+			<xs:enumeration value='610' />
+			<!-- IP电话费 -->
+			<xs:enumeration value='611' />
+			<!-- 移动电子商务费 -->
+			<xs:enumeration value='612' />
+			<!-- 联通话费 -->
+			<xs:enumeration value='613' />
+			<!-- 数据费 -->
+			<xs:enumeration value='640' />
+			<!-- 能源卡加油费 -->
+			<xs:enumeration value='641' />
+			<!-- 代维费 -->
+			<xs:enumeration value='660' />
+			<!-- 消费贷款 -->
+			<xs:enumeration value='681' />
+			<!-- 网关业务费 -->
+			<xs:enumeration value='682' />
+			<!-- 广告费 -->
+			<xs:enumeration value='683' />
+			<!-- 培补 -->
+			<xs:enumeration value='699' />
+			<!-- 保险费 -->
+			<xs:enumeration value='700' />
+			<!-- 保险代收 -->
+			<xs:enumeration value='701' />
+			<!-- 养老保险费 -->
+			<xs:enumeration value='702' />
+			<!-- 医疗保险费 -->
+			<xs:enumeration value='703' />
+			<!-- 车辆保险费 -->
+			<xs:enumeration value='704' />
+			<!-- 房屋管理费 -->
+			<xs:enumeration value='720' />
+			<!-- 房屋租赁费 -->
+			<xs:enumeration value='721' />
+			<!-- 土地使用费 -->
+			<xs:enumeration value='722' />
+			<!-- 绿化费 -->
+			<xs:enumeration value='723' />
+			<!-- 停车费 -->
+			<xs:enumeration value='724' />
+			<!-- 物业管理费 -->
+			<xs:enumeration value='731' />
+			<!-- 清洁费 -->
+			<xs:enumeration value='751' />
+			<!-- 退网络使用费 -->
+			<xs:enumeration value='760' />
+			<!-- 福利彩票预缴款 -->
+			<xs:enumeration value='761' />
+			<!-- 租赁服务费 -->
+			<xs:enumeration value='791' />
+			<!-- 邮费 -->
+			<xs:enumeration value='830' />
+			<!-- 邮购费 -->
+			<xs:enumeration value='831' />
+			<!-- 速递费 -->
+			<xs:enumeration value='832' />
+			<!-- 保安服务费 -->
+			<xs:enumeration value='841' />
+			<!-- 电梯 -->
+			<xs:enumeration value='842' />
+			<!-- 代理服务费 -->
+			<xs:enumeration value='843' />
+			<!-- 押运 -->
+			<xs:enumeration value='844' />
+			<!-- 通用费项 -->
+			<xs:enumeration value='000' />
+			<!-- 汇兑手续费 -->
+			<xs:enumeration value='008' />
+			<!-- 瑞银 -->
+			<xs:enumeration value='010' />
+			<!-- 理财 -->
+			<xs:enumeration value='018' />
+			<!-- 退人寿保险费 -->
+			<xs:enumeration value='024' />
+			<!-- 润讯 -->
+			<xs:enumeration value='033' />
+			<!-- V户 -->
+			<xs:enumeration value='043' />
+			<!-- 退息或V账户 -->
+			<xs:enumeration value='044' />
+			<!-- 代收费 -->
+			<xs:enumeration value='055' />
+			<!-- E令 -->
+			<xs:enumeration value='056' />
+			<!-- 退电话初装费 -->
+			<xs:enumeration value='061' />
+			<!-- 人行080 -->
+			<xs:enumeration value='080' />
+			<!-- 保管箱年费 -->
+			<xs:enumeration value='098' />
+			<!-- 本行 -->
+			<xs:enumeration value='099' />
+			<!-- 平寿 -->
+			<xs:enumeration value='110' />
+			<!-- 代发工资 -->
+			<xs:enumeration value='111' />
+			<!-- 代收费入账 -->
+			<xs:enumeration value='112' />
+			<!-- 报销 -->
+			<xs:enumeration value='113' />
+			<!-- 平产 -->
+			<xs:enumeration value='114' />
+			<!-- 平产 -->
+			<xs:enumeration value='115' />
+			<!-- 网发 -->
+			<xs:enumeration value='116' />
+			<!-- 网发 -->
+			<xs:enumeration value='117' />
+			<!-- 网提 -->
+			<xs:enumeration value='118' />
+			<!-- 老板通入账 -->
+			<xs:enumeration value='123' />
+			<!-- 付手续费 -->
+			<xs:enumeration value='130' />
+			<!-- 地税 -->
+			<xs:enumeration value='139' />
+			<!-- 电费退款 -->
+			<xs:enumeration value='144' />
+			<!-- 煤气 -->
+			<xs:enumeration value='145' />
+			<!-- 退水费 -->
+			<xs:enumeration value='146' />
+			<!-- 养路 -->
+			<xs:enumeration value='147' />
+			<!-- 退物业专项维修费 -->
+			<xs:enumeration value='148' />
+			<!-- 代付货款 -->
+			<xs:enumeration value='150' />
+			<!-- 退市内电话费 -->
+			<xs:enumeration value='160' />
+			<!-- IP电话费 -->
+			<xs:enumeration value='161' />
+			<!-- 能源卡加油费退款 -->
+			<xs:enumeration value='164' />
+			<!-- 退消费贷款 -->
+			<xs:enumeration value='168' />
+			<!-- 保险代付 -->
+			<xs:enumeration value='170' />
+			<!-- 房屋租赁费退款 -->
+			<xs:enumeration value='172' />
+			<!-- 物业管理费退款 -->
+			<xs:enumeration value='173' />
+			<!-- 清洁 -->
+			<xs:enumeration value='175' />
+			<!-- 退租赁服务费 -->
+			<xs:enumeration value='179' />
+			<!-- 保险费 -->
+			<xs:enumeration value='855' />
+			<!-- 信息服务费退款 -->
+			<xs:enumeration value='860' />
+			<!-- 血款 -->
+			<xs:enumeration value='861' />
+			<!-- 社会保险费 -->
+			<xs:enumeration value='871' />
+			<!-- 住房公积金 -->
+			<xs:enumeration value='872' />
+			<!-- 托底 -->
+			<xs:enumeration value='875' />
+			<!-- 其他代付费用 -->
+			<xs:enumeration value='878' />
+			<!-- 福彩 -->
+			<xs:enumeration value='879' />
+			<!-- 卡费 -->
+			<xs:enumeration value='880' />
+			<!-- 返缴税手续费 -->
+			<xs:enumeration value='881' />
+			<!-- 押运费 -->
+			<xs:enumeration value='884' />
+			<!-- 国际卡自动还款 -->
+			<xs:enumeration value='886' />
+			<!-- 消费信贷扣款 -->
+			<xs:enumeration value='887' />
+			<!-- 报考 -->
+			<xs:enumeration value='891' />
+			<!-- 学教费 -->
+			<xs:enumeration value='890' />
+			<!-- 学杂费 -->
+			<xs:enumeration value='892' />
+			<!-- 保教费 -->
+			<xs:enumeration value='893' />
+			<!-- 代理记账服务费 -->
+			<xs:enumeration value='894' />
+			<!-- 有线电视费 -->
+			<xs:enumeration value='911' />
+			<!-- 有线电视租赁费 -->
+			<xs:enumeration value='912' />
+			<!-- 移动电视费 -->
+			<xs:enumeration value='913' />
+			<!-- 个人批量代付 -->
+			<xs:enumeration value='938' />
+			<!-- 认证 -->
+			<xs:enumeration value='941' />
+			<!-- 退传呼服务费 -->
+			<xs:enumeration value='960' />
+			<!-- 奖金 -->
+			<xs:enumeration value='961' />
+			<!-- 养老金 -->
+			<xs:enumeration value='962' />
+			<!-- 交通罚没款 -->
+			<xs:enumeration value='971' />
+			<!-- 企业管理费 -->
+			<xs:enumeration value='990' />
+			<!-- 福彩 -->
+			<xs:enumeration value='987' />
+			<!-- 工商 -->
+			<xs:enumeration value='991' />
+			<!-- 商检 -->
+			<xs:enumeration value='992' />
+			<!-- 排污费 -->
+			<xs:enumeration value='993' />
+			<!-- 代发工资 -->
+			<xs:enumeration value='994' />
+			<!-- 劳务费 -->
+			<xs:enumeration value='995' />
+			<!-- 培补 -->
+			<xs:enumeration value='996' />
+			<!-- 退税 -->
+			<xs:enumeration value='997' />
+			<!-- 国税 -->
+			<xs:enumeration value='998' />
+			<!-- 退货 -->
+			<xs:enumeration value='999' />
+			<!-- 返奖业务 -->
+			<xs:enumeration value='A01' />
+			<!-- 重返奖业务 -->
+			<xs:enumeration value='A02' />
+			<!-- 销售资金划转 -->
+			<xs:enumeration value='A03' />
+			<!-- 剩余资金划转 -->
+			<xs:enumeration value='A04' />
+			<!-- 本票 -->
+			<xs:enumeration value='BPY' />
+			<!-- 冲正 -->
+			<xs:enumeration value='CDC' />
+			<!-- 报关 -->
+			<xs:enumeration value='CHG' />
+			<!-- 冲正 -->
+			<xs:enumeration value='COR' />
+			<!-- 退货 -->
+			<xs:enumeration value='CTH' />
+			<!-- 银券 -->
+			<xs:enumeration value='CTK' />
+			<!-- 冲正 -->
+			<xs:enumeration value='CWC' />
+			<!-- 代理清算 -->
+			<xs:enumeration value='DQS' />
+			<!-- 地铁 -->
+			<xs:enumeration value='DTK' />
+			<!-- 充值 -->
+			<xs:enumeration value='DTZ' />
+			<!-- 垫支返款 -->
+			<xs:enumeration value='DZP' />
+			<!-- 基金垫支 -->
+			<xs:enumeration value='FDZ' />
+			<!-- 手续 -->
+			<xs:enumeration value='FEE' />
+			<!-- 基金申认购 -->
+			<xs:enumeration value='FSG' />
+			<!-- 补贴 -->
+			<xs:enumeration value='GBT' />
+			<!-- 奖金 -->
+			<xs:enumeration value='GGJ' />
+			<!-- 红利 -->
+			<xs:enumeration value='GHL' />
+			<!-- 公积 -->
+			<xs:enumeration value='GJJ' />
+			<!-- 充值 -->
+			<xs:enumeration value='GSJ' />
+			<!-- 对公基础服务费 -->
+			<xs:enumeration value='GTS' />
+			<!-- 对公延伸服务费 -->
+			<xs:enumeration value='GYS' />
+			<!-- 周末 -->
+			<xs:enumeration value='GZM' />
+			<!-- 企网 -->
+			<xs:enumeration value='GZS' />
+			<!-- 港股 -->
+			<xs:enumeration value='HTK' />
+			<!-- 汇票 -->
+			<xs:enumeration value='IPC' />
+			<!-- 红利 -->
+			<xs:enumeration value='JJL' />
+			<!-- 活利 -->
+			<xs:enumeration value='JLB' />
+			<!-- 兑换 -->
+			<xs:enumeration value='JSH' />
+			<!-- 党费 -->
+			<xs:enumeration value='KDF' />
+			<!-- 跨行 -->
+			<xs:enumeration value='KHY' />
+			<!-- X-PAD理财 -->
+			<xs:enumeration value='PAD' />
+			<!-- 质押 -->
+			<xs:enumeration value='PAW' />
+			<!-- 工资 -->
+			<xs:enumeration value='PAY' />
+			<!-- 冲正 -->
+			<xs:enumeration value='PCC' />
+			<!-- 冲正 -->
+			<xs:enumeration value='PDC' />
+			<!-- 活利 -->
+			<xs:enumeration value='RJA' />
+			<!-- 日积月累 -->
+			<xs:enumeration value='RJB' />
+			<!-- 退票 -->
+			<xs:enumeration value='RTC' />
+			<!-- 代扣代缴预提所得税 -->
+			<xs:enumeration value='SDS' />
+			<!-- 基金 -->
+			<xs:enumeration value='SHH' />
+			<!-- 转公 -->
+			<xs:enumeration value='SZG' />
+			<!-- 收付 -->
+			<xs:enumeration value='SZS' />
+			<!-- 税费 -->
+			<xs:enumeration value='TAX' />
+			<!-- 存管 -->
+			<xs:enumeration value='TCC' />
+			<!-- 冲正 -->
+			<xs:enumeration value='TDC' />
+			<!-- 冲正 -->
+			<xs:enumeration value='TFC' />
+			<!-- 机转 -->
+			<xs:enumeration value='TOC' />
+			<!-- 退票再付 -->
+			<xs:enumeration value='TPP' />
+			<!-- 转账 -->
+			<xs:enumeration value='TRS' />
+			<!-- 冲正 -->
+			<xs:enumeration value='TWC' />
+			<!-- 撤冲 -->
+			<xs:enumeration value='WCC' />
+			<!-- 付撤 -->
+			<xs:enumeration value='WCR' />
+			<!-- 付冲 -->
+			<xs:enumeration value='WDC' />
+			<!-- 网付 -->
+			<xs:enumeration value='WDR' />
+			<!-- 网转 -->
+			<xs:enumeration value='WFI' />
+			<!-- 网转 -->
+			<xs:enumeration value='WFO' />
+			<!-- 网转 -->
+			<xs:enumeration value='WIA' />
+			<!-- 网转 -->
+			<xs:enumeration value='WIC' />
+			<!-- 网互 -->
+			<xs:enumeration value='WKT' />
+			<!-- 网充 -->
+			<xs:enumeration value='WMB' />
+			<!-- 网转 -->
+			<xs:enumeration value='WOC' />
+			<!-- 银期 -->
+			<xs:enumeration value='YQY' />
+			<!-- 周利 -->
+			<xs:enumeration value='ZLB' />
+			<!-- 债本 -->
+			<xs:enumeration value='ZQB' />
+			<!-- 债息 -->
+			<xs:enumeration value='ZQX' />
+			<!-- 退住房公积金 -->
+			<xs:enumeration value='287' />
+			<!-- 房子修补费 -->
+			<xs:enumeration value='889' />
+			<!-- 国库退库 -->
+			<xs:enumeration value='361' />
+			<!-- 水暖费 -->
+			<xs:enumeration value='200' />
+			<!-- 住房补贴 -->
+			<xs:enumeration value='687' />
+			<!-- 薪金报酬 -->
+			<xs:enumeration value='119' />
+			<!-- 续期寿险费 -->
+			<xs:enumeration value='262' />
+			<!-- 住房补贴 -->
+			<xs:enumeration value='876' />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation>手续费类型</xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_HANDLE_FEE_TYPE">
+		<xs:restriction base="xs:string">
+			<!-- 不收取任何手续费 -->
+			<xs:enumeration value="F0"/>
+			<!-- 收取手续费,交易金额外另行扣除手续费 -->
+			<xs:enumeration value="F1"/>
+			<!-- 收取手续费,手续费从请求的扣款金额中预支,实际的扣款金额是请求的扣款金额里面减去手续费的 -->
+			<xs:enumeration value="F2"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 金额类型 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_MONEY">
+		<xs:restriction base="xs:decimal">
+			<xs:pattern value="\d{1,16}\.\d{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:annotation>
+		<xs:documentation>交易明细</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_TRANS_DETAIL">
+		<xs:sequence>
+			<xs:element name="TRANS_NO" type="tns:T_TRANS_NO"/>
+			<xs:element name="TRANS_DATE" type="xs:date"/>
+			<xs:element name="ACCOUNT_NO" type="tns:T_ACCOUNT_NO"/>
+			<xs:element name="ACCOUNT_NAME" type="tns:T_ACCOUNT_NAME"/>
+			<xs:element name="MONEY" type="tns:T_MONEY"/>
+			<xs:element name="ID_TYPE" type="tns:T_ID_TYPE" nillable="true"/>
+			<xs:element name="ID_NO" type="tns:T_ID_NO" nillable="true"/>
+			<xs:element name="AGREEMENT_NO" type="tns:T_AGREEMENT_NO" nillable="true"/>
+			<xs:element name="USE_ITEM" type="tns:T_USE_ITEM" />
+			<xs:element name="POST_SCRIPT" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="200"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation> 中间代收付公司代码 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_COMPANY_CODE">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z0-9]{1,10}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 中间代收付公司名称 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_COMPANY_NAME">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 中间代收付公司联系人 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_COMPANY_LINKMAN">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 中间代收付公司联系电话 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_COMPANY_TEL">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation>交易明细v2: 增加中间代收付公司信息,用于单笔交易</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_TRANS_DETAIL_V2">
+		<xs:sequence>
+			<xs:element name="TRANS_NO" type="tns:T_TRANS_NO" />
+			<xs:element name="TRANS_DATE" type="xs:date" />
+			<xs:element name="ACCOUNT_NO" type="tns:T_ACCOUNT_NO" />
+			<xs:element name="ACCOUNT_NAME" type="tns:T_ACCOUNT_NAME" />
+			<xs:element name="MONEY" type="tns:T_MONEY" />
+			<xs:element name="ID_TYPE" type="tns:T_ID_TYPE" nillable="true" />
+			<xs:element name="ID_NO" type="tns:T_ID_NO" nillable="true" />
+			<xs:element name="AGREEMENT_NO" type="tns:T_AGREEMENT_NO"
+				nillable="true" />
+			<xs:element name="USE_ITEM" type="tns:T_USE_ITEM" />
+			<xs:choice>
+				<xs:element name="COMPANY_CODE" type="tns:T_COMPANY_CODE" />
+				<xs:sequence>
+					<xs:element name="COMPANY_NAME" type="tns:T_COMPANY_NAME" />
+					<xs:element name="COMPANY_LINKMAN" type="tns:T_COMPANY_LINKMAN" />
+					<xs:element name="COMPANY_TEL" type="tns:T_COMPANY_TEL" />
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="POST_SCRIPT" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="200" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:annotation>
+		<xs:documentation>交易明细v2: 增加中间代收付公司信息,用于批量交易</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_BATCH_TRANS_DETAIL_V2">
+		<xs:sequence>
+			<xs:element name="TRANS_NO" type="tns:T_TRANS_NO" />
+			<xs:element name="TRANS_DATE" type="xs:date" />
+			<xs:element name="ACCOUNT_NO" type="tns:T_ACCOUNT_NO" />
+			<xs:element name="ACCOUNT_NAME" type="tns:T_ACCOUNT_NAME" />
+			<xs:element name="MONEY" type="tns:T_MONEY" />
+			<xs:element name="ID_TYPE" type="tns:T_ID_TYPE" nillable="true" />
+			<xs:element name="ID_NO" type="tns:T_ID_NO" nillable="true" />
+			<xs:element name="AGREEMENT_NO" type="tns:T_AGREEMENT_NO"
+				nillable="true" />
+			<xs:choice>
+				<xs:element name="COMPANY_CODE" type="tns:T_COMPANY_CODE" />
+				<xs:sequence>
+					<xs:element name="COMPANY_NAME" type="tns:T_COMPANY_NAME" />
+					<xs:element name="COMPANY_LINKMAN" type="tns:T_COMPANY_LINKMAN" />
+					<xs:element name="COMPANY_TEL" type="tns:T_COMPANY_TEL" />
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="POST_SCRIPT" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="200" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation> 单笔代收代付交易的返回结果 </xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_SINGLE_TRANSACTION_RESULT">
+		<xs:sequence>
+			<xs:element name="ACCOUNT_DATE" type="xs:date" nillable="true"/>
+			<xs:element name="TRANS_AMT" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="HANDLE_FEE" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="ACTUAL_DEDUCT_AMT" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="HANDLE_FEE_TYPE" type="tns:T_HANDLE_FEE_TYPE" nillable="true"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation> 账务结果查询明细 </xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_ACCOUNT_RESULT_DETAIL">
+		<xs:sequence>
+			<xs:element name="TRANS_NO" type="tns:T_TRANS_NO" nillable="true"/>
+			<xs:element name="TRANS_STATUS" type="tns:T_STATUS_CODE" nillable="true"/>
+			<xs:element name="TRANS_MSG_TYPE" type="tns:T_TRANS_MSG_TYPE" nillable="true"/>
+			<xs:element name="TRANS_AMT" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="HANDLE_FEE" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="ACTUAL_DEDUCT_AMT" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="HANDLE_FEE_TYPE" type="tns:T_HANDLE_FEE_TYPE" nillable="true"/>
+			<xs:element name="ACCOUNT_DATE" type="xs:date" nillable="true"/>
+			<xs:element name="TRANS_DESC" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="500"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:annotation>
+		<xs:documentation> 账务结果查询明细v2: 增加扣款原交易返回码与冲正原交易返回码 </xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_ACCOUNT_RESULT_DETAIL_V2">
+		<xs:sequence>
+			<xs:element name="TRANS_NO" type="tns:T_TRANS_NO" nillable="true"/>
+			<xs:element name="DEDUCT_RTN_CODE" type="tns:T_RESULT_CODE" nillable="true"/>
+			<xs:element name="ROLLBACK_RTN_CODE" type="tns:T_RESULT_CODE" nillable="true"/>
+			<xs:element name="TRANS_STATUS" type="tns:T_STATUS_CODE" nillable="true"/>
+			<xs:element name="TRANS_MSG_TYPE" type="tns:T_TRANS_MSG_TYPE" nillable="true"/>
+			<xs:element name="TRANS_AMT" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="HANDLE_FEE" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="ACTUAL_DEDUCT_AMT" type="tns:T_MONEY" nillable="true"/>
+			<xs:element name="HANDLE_FEE_TYPE" type="tns:T_HANDLE_FEE_TYPE" nillable="true"/>
+			<xs:element name="ACCOUNT_DATE" type="xs:date" nillable="true"/>
+			<xs:element name="TRANS_DESC" nillable="true">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="500"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>批量(代收,代付)报文头</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_BATCH_HEAD">
+		<xs:sequence>
+			<xs:element name="PACK_NO" type="tns:T_PACK_NO"/>
+			<xs:element name="COUNT">
+				<xs:simpleType>
+					<xs:restriction base="xs:positiveInteger">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="2000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SUM" type="tns:T_MONEY"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	
+	<xs:annotation>
+		<xs:documentation>批量(代收,代付)报文头v2: 抽取明细的费用代码到头部</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_BATCH_HEAD_V2">
+		<xs:sequence>
+			<xs:element name="PACK_NO" type="tns:T_PACK_NO"/>
+			<xs:element name="COUNT">
+				<xs:simpleType>
+					<xs:restriction base="xs:positiveInteger">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="2000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SUM" type="tns:T_MONEY"/>
+			<xs:element name="USE_ITEM" type="tns:T_USE_ITEM" />
+		</xs:sequence>
+	</xs:complexType>
+	
+
+	<xs:annotation>
+		<xs:documentation>批量(代收,代付)报文体</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_BATCH_DETAIL">
+		<xs:sequence minOccurs="1" maxOccurs="2000">
+			<xs:element name="DETAIL" type="tns:T_TRANS_DETAIL"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>批量(代收,代付)报文体V2: 增加中间代收付商户信息,去除费用代码</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_BATCH_DETAIL_V2">
+		<xs:sequence minOccurs="1" maxOccurs="2000">
+			<xs:element name="DETAIL" type="tns:T_BATCH_TRANS_DETAIL_V2"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>交易报文编码</xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_TRANS_MSG_TYPE">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A001"/>
+			<xs:enumeration value="A002"/>
+			<xs:enumeration value="B001"/>
+			<xs:enumeration value="B002"/>
+			<xs:enumeration value="B003"/>
+			<xs:enumeration value="B004"/>
+			<xs:enumeration value="B005"/>
+			<xs:enumeration value="B101"/>
+			<xs:enumeration value="B102"/>
+			<xs:enumeration value="B104"/>
+			<xs:enumeration value="B105"/>
+			<xs:enumeration value="C001"/>
+			<xs:enumeration value="C002"/>
+			<xs:enumeration value="C003"/>
+			<xs:enumeration value="C004"/>
+			<xs:enumeration value="C102"/>
+			<xs:enumeration value="C103"/>
+			<xs:enumeration value="C104"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 交易返回码 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_RESULT_CODE">
+		<xs:restriction base="xs:string">
+			<!-- 处理成功 -->
+			<xs:enumeration value="R0000"/>
+			<!-- 后台服务不可用 -->
+			<xs:enumeration value="R0404"/>
+			<!-- 报文格式错 -->
+			<xs:enumeration value="R0405"/>
+			<!-- 余额不足 -->
+			<xs:enumeration value="R1000"/>
+			<!-- 账户状态异常 -->
+			<xs:enumeration value="R2000"/>
+			<!-- 交易窗口关闭 -->
+			<xs:enumeration value="R3000"/>
+			<!-- 原批量包不存在/原交易不存在 -->
+			<xs:enumeration value="R4000"/>
+			<!-- 原交易正在执行中 -->
+			<xs:enumeration value="R4001"/>
+			<!-- 原交易明确失败 -->
+			<xs:enumeration value="R5000"/>
+			<!-- 原交易已冲正 -->
+			<xs:enumeration value="R5001"/>
+			<!-- 交易要素非法 -->
+			<xs:enumeration value="R6000"/>
+			<!-- 账号不存在 -->
+			<xs:enumeration value="R6201"/>
+			<!-- 账号,户名不符 -->
+			<xs:enumeration value="R6202"/>
+			<!-- 证件信息不存在 -->
+			<xs:enumeration value="R6203"/>
+			<!-- 证件类型不匹配 -->
+			<xs:enumeration value="R6204"/>
+			<!-- 证件号码不匹配 -->
+			<xs:enumeration value="R6205"/>
+			<!-- 交易失败 -->
+			<xs:enumeration value="R8000"/>
+			<!-- 银行内部异常 -->
+			<xs:enumeration value="R9000"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 交易状态(账务状态)码 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_STATUS_CODE">
+		<xs:restriction base="xs:string">
+			<!-- 原交易明确成功且无冲正记录 -->
+			<xs:enumeration value="S00"/>
+			<!-- 原交易明确成功,虽有冲正记录但冲正明确失败 -->
+			<xs:enumeration value="S01"/>
+			<!-- 原交易明确失败(此状态下必无冲正记录) -->
+			<xs:enumeration value="S90"/>
+			<!-- 原交易状态未明确(需要人工处理) -->
+			<xs:enumeration value="S50"/>
+			<!-- 原交易明确成功,虽有冲正记录,但冲正结果未明 -->
+			<xs:enumeration value="S51"/>
+			<!-- 原交易成功,且冲正明确成功 -->
+			<xs:enumeration value="S99"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:annotation>
+		<xs:documentation> 公司信息注册类型 </xs:documentation>
+	</xs:annotation>
+
+	<xs:simpleType name="T_UPDATE_METHOD">
+		<xs:restriction base="xs:string">
+			<!-- UPDATE 方式 -->
+			<xs:enumeration value="U"/>
+			<!-- INSERT 方式 -->
+			<xs:enumeration value="I"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:annotation>
+		<xs:documentation>交易请求报文通用头部</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_REQUEST_HEAD">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation> SYS_CODE : 系统别 </xs:documentation>
+				<xs:documentation> MSG_ID : 报文编号 </xs:documentation>
+				<xs:documentation> SEND_TIMESTAMP : 报文发起方发送时间戳 </xs:documentation>
+			</xs:annotation>
+			<xs:element name="SYS_CODE" type="tns:T_SYS_CODE"/>
+			<xs:element name="MSG_ID">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="[-A-Za-z0-9]{30}"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SEND_TIMESTAMP" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>交易响应报文通用头部</xs:documentation>
+	</xs:annotation>
+
+	<xs:complexType name="T_RESPONSE_HEAD">
+		<xs:annotation>
+			<xs:documentation> SYS_CODE: 系统别 </xs:documentation>
+			<xs:documentation> RESULT_CODE: 报文处理响应码 </xs:documentation>
+			<xs:documentation> RESULT_DESC: 报文处理描述信息 </xs:documentation>
+			<xs:documentation> SEND_TIMESTAMP: 报文发起方发送时间戳 </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SYS_CODE" type="tns:T_SYS_CODE"/>
+			<xs:element name="RESULT_CODE" type="tns:T_RESULT_CODE"/>
+			<xs:element name="RESULT_DESC">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="1"/>
+						<xs:maxLength value="500"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="SEND_TIMESTAMP" type="xs:dateTime"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:annotation>
+		<xs:documentation>A001请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="A001_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="EHLO" nillable="true">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>A001响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="A001_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="EHLO" nillable="true">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:minLength value="1"/>
+										<xs:maxLength value="100"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:annotation>
+		<xs:documentation>A002代收付公司信息注册请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="A002_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="COMPANY_CODE" type="tns:T_COMPANY_CODE" />
+							<xs:element name="COMPANY_NAME" type="tns:T_COMPANY_NAME" />
+							<xs:element name="COMPANY_LINKMAN" type="tns:T_COMPANY_LINKMAN" />
+							<xs:element name="COMPANY_TEL" type="tns:T_COMPANY_TEL" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>A002响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="A002_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="UPDATE_METHOD" type="tns:T_UPDATE_METHOD" nillable="true" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B001单笔代收请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B001_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY" type="tns:T_TRANS_DETAIL"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B001单笔代收响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B001_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY" type="tns:T_SINGLE_TRANSACTION_RESULT"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B002单笔代付请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B002_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY" type="tns:T_TRANS_DETAIL"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B002单笔代付响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B002_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY" type="tns:T_SINGLE_TRANSACTION_RESULT"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B003单笔实时冲正请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B003_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TRANS_NO" type="tns:T_TRANS_NO"/>
+							<xs:element name="ACCOUNT_NO" type="tns:T_ACCOUNT_NO"/>
+							<xs:element name="MONEY" type="tns:T_MONEY"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B003单笔实时冲正响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B003_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TRANS_NO" type="tns:T_TRANS_NO" nillable="true"/>
+							<xs:element name="ACCOUNT_DATE" type="xs:date" nillable="true"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B004批量代收请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B004_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BATCH" type="tns:T_BATCH_HEAD"/>
+							<xs:element name="DETAILS" type="tns:T_BATCH_DETAIL"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B004批量代收响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B004_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DESCRIPTION" nillable="true">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="500" />
+									</xs:restriction>								
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B005批量代付请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B005_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BATCH" type="tns:T_BATCH_HEAD"/>
+							<xs:element name="DETAILS" type="tns:T_BATCH_DETAIL"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B005批量代收响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B005_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DESCRIPTION" nillable="true">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="500" />
+									</xs:restriction>								
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B101单笔代收请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B101_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY" type="tns:T_TRANS_DETAIL_V2"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B101单笔代收响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B101_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY" type="tns:T_SINGLE_TRANSACTION_RESULT"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B102单笔代付请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B102_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY" type="tns:T_TRANS_DETAIL_V2"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B102单笔代付响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B102_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY" type="tns:T_SINGLE_TRANSACTION_RESULT"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B104批量代收请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B104_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BATCH" type="tns:T_BATCH_HEAD_V2"/>
+							<xs:element name="DETAILS" type="tns:T_BATCH_DETAIL_V2"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B104批量代收响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B104_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DESCRIPTION" nillable="true">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="500" />
+									</xs:restriction>								
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B105批量代付请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B105_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BATCH" type="tns:T_BATCH_HEAD_V2"/>
+							<xs:element name="DETAILS" type="tns:T_BATCH_DETAIL_V2"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>B105批量代收响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="B105_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DESCRIPTION" nillable="true">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="500" />
+									</xs:restriction>								
+								</xs:simpleType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:annotation>
+		<xs:documentation>C001账户验证请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C001_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ACCOUNT_NO" type="tns:T_ACCOUNT_NO"/>
+							<xs:element name="ACCOUNT_NAME" type="tns:T_ACCOUNT_NAME"/>
+							<xs:element name="ID_TYPE" type="tns:T_ID_TYPE" nillable="true"/>
+							<xs:element name="ID_NO" type="tns:T_ID_NO" nillable="true"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C001账户验证响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C001_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C002单笔账务查询交易请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C002_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TRANS_NO" type="tns:T_TRANS_NO"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C002单笔账务查询交易响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C002_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY" type="tns:T_ACCOUNT_RESULT_DETAIL"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C003批量处理结果报文查询请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C003_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PACK_NO" type="tns:T_PACK_NO"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:annotation>
+		<xs:documentation>C003批量处理结果报文查询响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C003_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BATCH" nillable="true">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="PACK_NO" type="tns:T_PACK_NO"/>
+										<xs:element name="TRANS_MSG_TYPE" type="tns:T_TRANS_MSG_TYPE"/>
+										<xs:element name="COUNT">
+											<xs:simpleType>
+												<xs:restriction base="xs:positiveInteger">
+												<xs:minInclusive value="1"/>
+												<xs:maxInclusive value="2000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="SUM" type="tns:T_MONEY"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="DETAILS" nillable="true">
+								<xs:complexType>
+									<xs:sequence minOccurs="1" maxOccurs="unbounded">
+										<xs:element name="DETAIL" type="tns:T_ACCOUNT_RESULT_DETAIL"
+										/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C004对账交易请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C004_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TRANS_DATE" type="xs:date"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C004对账交易响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C004_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence maxOccurs="1" minOccurs="1">
+							<xs:element name="DETAILS">
+								<xs:complexType>
+									<xs:sequence minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="DETAIL" type="tns:T_ACCOUNT_RESULT_DETAIL" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C102单笔账务查询交易请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C102_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TRANS_NO" type="tns:T_TRANS_NO"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C102单笔账务查询交易响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C102_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY" type="tns:T_ACCOUNT_RESULT_DETAIL_V2"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C103批量处理结果报文查询请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C103_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="PACK_NO" type="tns:T_PACK_NO"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+
+	<xs:annotation>
+		<xs:documentation>C103批量处理结果报文查询响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C103_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="BATCH" nillable="true">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="PACK_NO" type="tns:T_PACK_NO"/>
+										<xs:element name="TRANS_MSG_TYPE" type="tns:T_TRANS_MSG_TYPE"/>
+										<xs:element name="COUNT">
+											<xs:simpleType>
+												<xs:restriction base="xs:positiveInteger">
+												<xs:minInclusive value="1"/>
+												<xs:maxInclusive value="2000"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="SUM" type="tns:T_MONEY"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="DETAILS" nillable="true">
+								<xs:complexType>
+									<xs:sequence minOccurs="1" maxOccurs="unbounded">
+										<xs:element name="DETAIL" type="tns:T_ACCOUNT_RESULT_DETAIL_V2" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C104对账交易请求报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C104_REQUEST">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_REQUEST_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="TRANS_DATE" type="xs:date"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:documentation>C104对账交易响应报文描述</xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="C104_RESPONSE">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="HEAD" type="tns:T_RESPONSE_HEAD"/>
+				<xs:element name="BODY">
+					<xs:complexType>
+						<xs:sequence maxOccurs="1" minOccurs="1">
+							<xs:element name="DETAILS">
+								<xs:complexType>
+									<xs:sequence minOccurs="0" maxOccurs="unbounded">
+										<xs:element name="DETAIL" type="tns:T_ACCOUNT_RESULT_DETAIL_V2" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

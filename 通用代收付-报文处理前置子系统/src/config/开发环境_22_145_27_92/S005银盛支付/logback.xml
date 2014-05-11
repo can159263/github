@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date %-5level [%thread] TOKEN:[%X{TOKEN}] MSG_ID:[%X{MSG_ID}] %logger{10} [%file:%line] %msg%n</pattern>
+		</encoder>
+	</appender>
+	<!-- 文件输出器,自动创建目录,相对于工程目录 -->
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>d:/log/S005/frontend.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>d:/log/S005/log_frontend_%d{yyyy-MM-dd}.zip</fileNamePattern>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%date %-5level [%thread] TOKEN:[%X{TOKEN}] MSG_ID:[%X{MSG_ID}] %logger{10} [%file:%line] %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

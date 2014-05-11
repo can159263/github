@@ -1,0 +1,5 @@
+
+
+jaxb下的每个请求和响应类及相关对象都要分别继承CommonRequestMessage和CommonResponseMessage
+
+enum不用加seriable接口

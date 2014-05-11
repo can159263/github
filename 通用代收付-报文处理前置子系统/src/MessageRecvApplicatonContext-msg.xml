@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:oxm="http://www.springframework.org/schema/oxm"
+	xsi:schemaLocation="http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- 此文件配置的报文前置,后置,jaxb转换组件 -->
+
+	<!-- JAXB组件 -->
+	<bean id="KEY_XML_BEAN_MAPPING"
+		class="cn.szboc.platform.component.xmlbean.nospring.XmlBeanMapping">
+		<constructor-arg name="contextPath"
+			value="cn.szboc.uniformproxy.remoteinvoke.jaxb.bean" />
+		<property name="encoding" value="UTF-8" />
+		<property name="formatOutput" value="true" />
+		<property name="schemaClasspath"
+			value="/cn/szboc/uniformproxy/remoteinvoke/jaxb/xsd/UniformProxySystem.xsd" />
+	</bean>
+
+	<!-- JAXB组件(ECES.RECV)异步回执ECES方请求报文 -->
+	<bean id="ECES_RESPONSE_RECV_XML_MAPPING"
+		class="cn.szboc.platform.component.xmlbean.nospring.XmlBeanMapping">
+		<constructor-arg name="contextPath"
+			value="cn.szboc.uniformproxy.remoteinvoke.batch.bean.recv" />
+		<property name="encoding" value="GBK" />
+		<property name="formatOutput" value="true" />
+		<property name="schemaClasspath"
+			value="/cn/szboc/uniformproxy/remoteinvoke/batch/xsd/recv/ECES_批量扣款接收回盘请求_0020.xsd" />
+	</bean>
+
+	<!-- JAXB组件(ECES.SEND)异步回执我方同步响应 -->
+	<bean id="ECES_RESPONSE_SEND_XML_MAPPING"
+		class="cn.szboc.platform.component.xmlbean.nospring.XmlBeanMapping">
+		<constructor-arg name="contextPath"
+			value="cn.szboc.uniformproxy.remoteinvoke.batch.bean.send" />
+		<property name="encoding" value="GBK" />
+		<property name="formatOutput" value="true" />
+		<property name="schemaClasspath"
+			value="/cn/szboc/uniformproxy/remoteinvoke/batch/xsd/send/ECES_批量扣款接收回盘回执_0020.xsd" />
+	</bean>
+
+	<!-- 前置处理器 -->
+	<bean id="PreProcessor"
+		class="cn.szboc.uniformproxy.frontend.server.preprocess.PreProcessor">
+		<property name="xmlBeanMapping" ref="KEY_XML_BEAN_MAPPING" />
+		<property name="convertors">
+			<list>
+				<bean id="MD5Convertor"
+					class="cn.szboc.uniformproxy.frontend.server.preprocess.convertor.MD5Convertor" />
+				<bean id="InflateConvertor"
+					class="cn.szboc.uniformproxy.frontend.server.preprocess.convertor.InflateConvertor" />
+				<bean id="DesConvertor"
+					class="cn.szboc.uniformproxy.frontend.server.preprocess.convertor.DesConvertor">
+					<property name="configBean" ref="KEY_SYSTEM_CONFIG_BEAN" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 后置处理器 -->
+	<bean id="PostProcessor"
+		class="cn.szboc.uniformproxy.frontend.server.postprocessor.PostProcessor">
+		<property name="xmlBeanMapping" ref="KEY_XML_BEAN_MAPPING" />
+		<property name="convertors">
+			<list>
+				<bean id="DesHandler"
+					class="cn.szboc.uniformproxy.frontend.server.postprocessor.convertor.DesHandler">
+					<property name="configBean" ref="KEY_SYSTEM_CONFIG_BEAN" />
+				</bean>
+				<bean id="DeflateHandler"
+					class="cn.szboc.uniformproxy.frontend.server.postprocessor.convertor.DeflateHandler" />
+				<bean id="MD5Handler"
+					class="cn.szboc.uniformproxy.frontend.server.postprocessor.convertor.MD5Handler" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 自动扫描报文交易处理模块 -->
+	<context:component-scan
+		base-package="cn.szboc.uniformproxy.frontend.server.process.processor" />
+
+</beans>
