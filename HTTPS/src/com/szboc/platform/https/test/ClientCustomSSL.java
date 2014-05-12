@@ -62,7 +62,7 @@ public class ClientCustomSSL {
 
         // Trust own CA and all self-signed certs
         SSLContext sslcontext = SSLContexts.custom()
-                .loadTrustMaterial(trustStore, new TrustSelfSignedStrategy())
+                .loadTrustMaterial(trustStore, new TrustSelfSignedStrategy())//loadTrustMaterial(null, new TrustSelfSignedStrategy())
                 .build();
         // Allow TLSv1 protocol only
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
